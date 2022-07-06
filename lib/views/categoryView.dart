@@ -81,7 +81,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisExtent: 240, crossAxisCount: 2),
+                        mainAxisExtent: 230, crossAxisCount: 3),
                     itemCount: data.categories.length,
                     padding: EdgeInsets.all(10),
                     itemBuilder: (context, index) {
@@ -106,6 +106,31 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 }
               },
             ),
+            Consumer<CategoryNotifier>(builder: (context, data, _) {
+              return data.isDataLoaded
+                  ? GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisExtent: 300, crossAxisCount: 2),
+                      itemCount: data.productsList.length,
+                      // padding: EdgeInsets.all(10),
+                      itemBuilder: (context, index) {
+                        return productCardWidget(
+                            data: data,
+                            index: index,
+                            onTap: () {
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //     builder: ((context) =>
+                              //         SubCategoryView(index: index)),
+                              //   ),
+                              // );
+                            });
+                      },
+                    )
+                  : CircularProgressIndicator(color: Colors.green);
+            }),
           ],
         ),
       ),
@@ -131,6 +156,72 @@ class _CategoryScreenState extends State<CategoryScreen> {
           textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+
+  Widget productCardWidget(
+      {required CategoryNotifier data,
+      required int index,
+      required VoidCallback onTap}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 0.1,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(data.productsList[index].size),
+              Text(data.productsList[index].discount),
+            ],
+          ),
+          Image.network(
+            data.productsList[index].image,
+            width: 100,
+          ),
+          Text(
+            data.productsList[index].title,
+            style: TextStyle(fontSize: 18),
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "₹${data.productsList[index].splPrice}",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
+              ),
+              SizedBox(width: 5),
+              Text(
+                data.productsList[index].price.toString(),
+                style: TextStyle(
+                  decoration: TextDecoration.lineThrough,
+                ),
+              ),
+            ],
+          ),
+          MaterialButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 0,
+            onPressed: () {},
+            child: Text(
+              "Add to cart",
+              style: TextStyle(color: Colors.white),
+            ),
+            color: Colors.green,
+          ),
+        ],
+      ),
     );
   }
 }

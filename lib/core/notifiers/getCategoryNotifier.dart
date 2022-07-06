@@ -8,7 +8,8 @@ import '../api/fetch_data.dart';
 class CategoryNotifier extends ChangeNotifier {
   FetchData fetchData = FetchData();
 
-  List<DataModel> categories = [];
+  List<CateModel> categories = [];
+  List<ProductsModel> productsList = [];
   late String adImage;
   late int cartCount;
   late int favCount;
@@ -17,6 +18,7 @@ class CategoryNotifier extends ChangeNotifier {
 
   Future getCategories() async {
     categories.clear();
+    productsList.clear();
     try {
       isDataLoaded = false;
 
@@ -25,14 +27,30 @@ class CategoryNotifier extends ChangeNotifier {
       var parsedData = await json.decode(response.body);
 
       var cate = parsedData['data']['category'];
+      var products = parsedData['data']['products'];
       adImage = parsedData['data']['image'];
       favCount = parsedData['data']['favouriteCount'];
       cartCount = parsedData['data']['cartCount'];
 
       for (var i in cate) {
-        DataModel category =
-            DataModel(id: i["_id"], title: i["title"], image: i["image"]);
+        CateModel category =
+            CateModel(id: i["_id"], title: i["title"], image: i["image"]);
         categories.add(category);
+      }
+
+      for (var i in products) {
+        ProductsModel product = ProductsModel(
+          id: i["_id"],
+          title: i["title"],
+          image: i["image"],
+          brand: i["brand"],
+          discount: i["discount"],
+          price: i["price"],
+          size: i["uom"],
+          splPrice: i["spl_price"],
+          stock: i["stockStatus"],
+        );
+        productsList.add(product);
       }
 
       isDataLoaded = true;
